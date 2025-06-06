@@ -1,1 +1,1 @@
-# py-coupler
+# pyproject-template
