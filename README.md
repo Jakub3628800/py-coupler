@@ -13,10 +13,19 @@ To run the CLI from the repository root:
 
 ```bash
 python -m pymoduleanalyzer.cli.main analyze repository --path .
+
+# Output analysis as JSON
+python -m pymoduleanalyzer.cli.main analyze repository --path . --json-output analysis.json
 ```
 
 Generate a DOT dependency graph:
 
 ```bash
 python -m pymoduleanalyzer.cli.main analyze graph --path . --output deps.dot
+```
+
+Generate a Mermaid dependency graph:
+
+```bash
+python -m pymoduleanalyzer.cli.main analyze graph --path . --output deps.mmd --format mermaid
 ```

@@ -1,4 +1,4 @@
-TEST_OUTPUT := tests/repository_analysis.txt
+TEST_OUTPUT := tests/repository_analysis.json
 DOT_OUTPUT := tests/dependencies.dot
 
 
@@ -7,7 +7,7 @@ DOT_OUTPUT := tests/dependencies.dot
 test: $(TEST_OUTPUT) $(DOT_OUTPUT)
 
 $(TEST_OUTPUT):
-	python -m pymoduleanalyzer.cli.main analyze repository --path . > $@
+	python -m pymoduleanalyzer.cli.main analyze repository --path . --json-output $@
 
 $(DOT_OUTPUT):
 	python -m pymoduleanalyzer.cli.main analyze graph --path . --output $@
