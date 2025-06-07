@@ -1,0 +1,93 @@
+{
+  "module_count": 24,
+  "absolute_imports": 37,
+  "relative_imports": 9,
+  "modules": {
+    "main": {
+      "afferent": 0,
+      "efferent": 2,
+      "instability": 1.0
+    },
+    "__init__": {
+      "afferent": 0,
+      "efferent": 0,
+      "instability": 0.0
+    },
+    "graph_generator": {
+      "afferent": 0,
+      "efferent": 3,
+      "instability": 1.0
+    },
+    "report_builder": {
+      "afferent": 0,
+      "efferent": 3,
+      "instability": 1.0
+    },
+    "complexity": {
+      "afferent": 0,
+      "efferent": 1,
+      "instability": 1.0
+    },
+    "coupling": {
+      "afferent": 0,
+      "efferent": 2,
+      "instability": 1.0
+    },
+    "encapsulation": {
+      "afferent": 0,
+      "efferent": 3,
+      "instability": 1.0
+    },
+    "precommit": {
+      "afferent": 0,
+      "efferent": 3,
+      "instability": 1.0
+    },
+    "suggestions": {
+      "afferent": 0,
+      "efferent": 2,
+      "instability": 1.0
+    },
+    "rules": {
+      "afferent": 0,
+      "efferent": 2,
+      "instability": 1.0
+    },
+    "commands": {
+      "afferent": 0,
+      "efferent": 7,
+      "instability": 1.0
+    },
+    "file_utils": {
+      "afferent": 0,
+      "efferent": 1,
+      "instability": 1.0
+    },
+    "config": {
+      "afferent": 0,
+      "efferent": 3,
+      "instability": 1.0
+    },
+    "module_discovery": {
+      "afferent": 0,
+      "efferent": 2,
+      "instability": 1.0
+    },
+    "method_analyzer": {
+      "afferent": 0,
+      "efferent": 3,
+      "instability": 1.0
+    },
+    "ast_parser": {
+      "afferent": 0,
+      "efferent": 3,
+      "instability": 1.0
+    },
+    "import_analyzer": {
+      "afferent": 0,
+      "efferent": 5,
+      "instability": 1.0
+    }
+  },
+  "circular_dependencies": []
+}
