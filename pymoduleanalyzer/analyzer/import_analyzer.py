@@ -10,7 +10,7 @@ from .ast_parser import parse_imports
 
 
 def analyze_imports(modules: List[Path]) -> Dict[Path, List[str]]:
-    """Return mapping of modules to list of imported module names."""
+    """Return mapping of modules to list of full import names including what's imported."""
     result: Dict[Path, List[str]] = {}
     for module in modules:
         found: List[str] = []
@@ -18,10 +18,27 @@ def analyze_imports(modules: List[Path]) -> Dict[Path, List[str]]:
             if isinstance(node, ast.ImportFrom):
                 base = node.module or ""
                 if node.level:
-                    found.append("." * node.level + base)
+                    # Relative imports
+                    base = "." * node.level + base
+                
+                # Add specific imports from the module
+                if node.names:
+                    for alias in node.names:
+                        if alias.name == "*":
+                            # Handle wildcard imports
+                            found.append(f"{base}.*")
+                        else:
+                            # Full qualified name
+                            if base:
+                                found.append(f"{base}.{alias.name}")
+                            else:
+                                found.append(alias.name)
                 else:
+                    # Just the module itself
                     found.append(base)
+                    
             elif isinstance(node, ast.Import):
+                # Direct imports like "import os" or "import os.path"
                 found.extend(alias.name for alias in node.names)
         result[module] = found
     return result

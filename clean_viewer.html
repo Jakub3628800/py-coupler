@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PyModuleAnalyzer - Clean Project Dependencies</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        #diagram {
+            width: 100%;
+            min-height: 700px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: auto;
+            background: white;
+        }
+        .controls {
+            margin: 15px 0;
+            text-align: center;
+        }
+        button {
+            margin: 5px;
+            padding: 10px 20px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .info {
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            border-left: 4px solid #4CAF50;
+        }
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .stat-box {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            min-width: 120px;
+        }
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>PyModuleAnalyzer - Project Dependencies</h1>
+        
+        <div class="info">
+            <p><strong>Clean project view:</strong> This diagram shows only the actual project modules and their dependencies, excluding virtual environments, installed packages, and system files.</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat-box">
+                <div class="stat-number">27</div>
+                <div>Project Modules</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">48</div>
+                <div>Absolute Imports</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">9</div>
+                <div>Relative Imports</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">0</div>
+                <div>Circular Dependencies</div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button onclick="loadDiagram()">Reload Diagram</button>
+            <button onclick="zoomIn()">Zoom In</button>
+            <button onclick="zoomOut()">Zoom Out</button>
+            <button onclick="resetZoom()">Reset Zoom</button>
+            <button onclick="toggleFullscreen()">Fullscreen</button>
+        </div>
+        
+        <div id="diagram"></div>
+    </div>
+
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: false,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis',
+                padding: 20
+            },
+            themeVariables: {
+                primaryColor: '#4CAF50',
+                primaryTextColor: '#333',
+                primaryBorderColor: '#45a049',
+                lineColor: '#666'
+            }
+        });
+
+        let currentZoom = 1;
+
+        function zoomIn() {
+            currentZoom += 0.2;
+            updateZoom();
+        }
+
+        function zoomOut() {
+            currentZoom = Math.max(0.3, currentZoom - 0.2);
+            updateZoom();
+        }
+
+        function resetZoom() {
+            currentZoom = 1;
+            updateZoom();
+        }
+
+        function updateZoom() {
+            const diagram = document.getElementById('diagram');
+            diagram.style.transform = `scale(${currentZoom})`;
+            diagram.style.transformOrigin = 'top left';
+        }
+
+        function toggleFullscreen() {
+            const diagram = document.getElementById('diagram');
+            if (!document.fullscreenElement) {
+                diagram.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        async function loadDiagram() {
+            try {
+                const response = await fetch('clean_diagram.mmd');
+                const mermaidCode = await response.text();
+                
+                console.log('Loaded mermaid code, length:', mermaidCode.length);
+                
+                const diagramDiv = document.getElementById('diagram');
+                diagramDiv.innerHTML = '<div class="mermaid">' + mermaidCode + '</div>';
+                
+                await mermaid.init(undefined, document.querySelectorAll('.mermaid'));
+                console.log('Mermaid diagram initialized successfully');
+            } catch (error) {
+                console.error('Error loading diagram:', error);
+                document.getElementById('diagram').innerHTML = 
+                    '<div style="padding: 40px; text-align: center; color: red;">' +
+                    '<h3>Error loading diagram</h3>' +
+                    '<p>' + error.message + '</p>' +
+                    '<p>Make sure clean_diagram.mmd exists in the same directory.</p>' +
+                    '<p>Check the browser console for more details.</p>' +
+                    '</div>';
+            }
+        }
+
+        // Auto-load on page load
+        window.onload = loadDiagram;
+    </script>
+</body>
+</html>

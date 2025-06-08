@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Repository Dependencies - Grouped Package View</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        #diagram {
+            width: 100%;
+            min-height: 900px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: auto;
+            background: white;
+            padding: 30px;
+        }
+        .controls {
+            margin: 15px 0;
+            text-align: center;
+        }
+        button {
+            margin: 5px;
+            padding: 10px 20px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .info {
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            border-left: 4px solid #4CAF50;
+        }
+        .legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px;
+        }
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+            border: 2px solid;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Repository Dependencies - Grouped by Package</h1>
+        
+        <div class="info">
+            <p><strong>Organized by packages:</strong> This diagram groups modules into subgraphs by their package structure, making the relationships much clearer.</p>
+        </div>
+
+        <div class="legend" id="legend">
+            <p><em>Legend will be generated automatically based on discovered packages</em></p>
+        </div>
+        
+        <div class="controls">
+            <button onclick="loadDiagram()">Reload Diagram</button>
+            <button onclick="zoomIn()">Zoom In</button>
+            <button onclick="zoomOut()">Zoom Out</button>
+            <button onclick="resetZoom()">Reset Zoom</button>
+            <button onclick="toggleFullscreen()">Fullscreen</button>
+            <button onclick="fitToScreen()">Fit to Screen</button>
+        </div>
+        
+        <div id="diagram"></div>
+    </div>
+
+    <script>
+        let currentZoom = 1;
+
+        function zoomIn() {
+            currentZoom += 0.15;
+            updateZoom();
+        }
+
+        function zoomOut() {
+            currentZoom = Math.max(0.2, currentZoom - 0.15);
+            updateZoom();
+        }
+
+        function resetZoom() {
+            currentZoom = 1;
+            updateZoom();
+        }
+
+        function fitToScreen() {
+            currentZoom = 0.8;
+            updateZoom();
+        }
+
+        function updateZoom() {
+            const diagram = document.getElementById('diagram');
+            diagram.style.transform = `scale(${currentZoom})`;
+            diagram.style.transformOrigin = 'top left';
+        }
+
+        function toggleFullscreen() {
+            const diagram = document.getElementById('diagram');
+            if (!document.fullscreenElement) {
+                diagram.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        function generateLegend(mermaidCode) {
+            const legendDiv = document.getElementById('legend');
+            
+            // Extract subgraphs and their colors
+            const subgraphs = [];
+            const styleColors = {};
+            
+            // Find subgraph definitions
+            const subgraphMatches = mermaidCode.match(/subgraph\s+(\w+)\[([^\]]+)\]/g);
+            if (subgraphMatches) {
+                subgraphMatches.forEach(match => {
+                    const [, id, label] = match.match(/subgraph\s+(\w+)\[([^\]]+)\]/);
+                    if (id !== 'external' && id !== 'stdlib' && id !== 'thirdparty') {
+                        subgraphs.push({ id, label });
+                    }
+                });
+            }
+            
+            // Extract style definitions
+            const styleMatches = mermaidCode.match(/classDef\s+(\w+Style)\s+fill:(#[0-9A-Fa-f]+),stroke:(#[0-9A-Fa-f]+)/g);
+            if (styleMatches) {
+                styleMatches.forEach(match => {
+                    const [, styleName, fillColor, strokeColor] = match.match(/classDef\s+(\w+Style)\s+fill:(#[0-9A-Fa-f]+),stroke:(#[0-9A-Fa-f]+)/);
+                    styleColors[styleName] = { fill: fillColor, stroke: strokeColor };
+                });
+            }
+            
+            // Generate legend HTML
+            let legendHTML = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">';
+            
+            subgraphs.forEach(subgraph => {
+                const styleName = `${subgraph.id}Style`;
+                const colors = styleColors[styleName];
+                if (colors) {
+                    legendHTML += `
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: ${colors.fill}; border: 2px solid ${colors.stroke}; width: 20px; height: 20px; border-radius: 3px;"></div>
+                            <span><strong>${subgraph.label}</strong></span>
+                        </div>
+                    `;
+                }
+            });
+            
+            // Add stdlib and third-party dependencies
+            legendHTML += `
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #F5F5F5; border: 2px solid #757575; width: 20px; height: 20px; border-radius: 3px;"></div>
+                    <span><strong>stdlib</strong> - Standard Library</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #FFE0B2; border: 2px solid #F57C00; width: 20px; height: 20px; border-radius: 3px;"></div>
+                    <span><strong>thirdparty</strong> - Third-party Packages</span>
+                </div>
+            `;
+            
+            legendHTML += '</div>';
+            legendDiv.innerHTML = legendHTML;
+        }
+
+        async function loadDiagram() {
+            try {
+                const response = await fetch('grouped_diagram.mmd');
+                const mermaidCode = await response.text();
+                
+                console.log('Loading grouped diagram, length:', mermaidCode.length);
+                
+                // Generate dynamic legend
+                generateLegend(mermaidCode);
+                
+                // Configure mermaid for subgraphs
+                mermaid.initialize({ 
+                    startOnLoad: false,
+                    theme: 'base',
+                    themeVariables: {
+                        primaryColor: '#ffffff',
+                        primaryTextColor: '#333333',
+                        primaryBorderColor: '#cccccc',
+                        lineColor: '#666666',
+                        secondaryColor: '#f8f9fa',
+                        tertiaryColor: '#ffffff',
+                        background: '#ffffff',
+                        mainBkg: '#ffffff',
+                        secondBkg: '#f8f9fa',
+                        tertiaryTextColor: '#333333'
+                    },
+                    flowchart: {
+                        useMaxWidth: false,
+                        htmlLabels: true,
+                        curve: 'basis',
+                        padding: 20,
+                        nodeSpacing: 50,
+                        rankSpacing: 80,
+                        marginX: 20,
+                        marginY: 20,
+                        subGraphTitleMargin: {
+                            top: 5,
+                            bottom: 5
+                        }
+                    }
+                });
+                
+                const diagramDiv = document.getElementById('diagram');
+                
+                // Clear previous diagram
+                diagramDiv.innerHTML = '';
+                
+                // Create a unique ID for this diagram
+                const diagramId = 'mermaid-grouped-' + Date.now();
+                diagramDiv.innerHTML = `<div id="${diagramId}" class="mermaid">${mermaidCode}</div>`;
+                
+                // Render the diagram
+                await mermaid.run({
+                    nodes: [document.getElementById(diagramId)]
+                });
+                
+                console.log('Grouped diagram loaded successfully');
+                
+            } catch (error) {
+                console.error('Error loading diagram:', error);
+                document.getElementById('diagram').innerHTML = 
+                    '<div style="padding: 40px; text-align: center; color: red;">' +
+                    '<h3>Error loading diagram</h3>' +
+                    '<p>' + error.message + '</p>' +
+                    '<p>Make sure grouped_diagram.mmd exists in the same directory.</p>' +
+                    '<p>Check the browser console for more details.</p>' +
+                    '</div>';
+            }
+        }
+
+        // Auto-load on page load
+        window.onload = loadDiagram;
+    </script>
+</body>
+</html>
