@@ -1,0 +1,18 @@
+{
+  "main": ["pymoduleanalyzer.cli.main", "typer", "."],
+  "graph_generator": ["pathlib", "typing", "graphviz"],
+  "report_builder": ["pathlib", "typing", "jinja2"],
+  "complexity": ["pathlib"],
+  "coupling": ["pathlib", "typing"],
+  "encapsulation": ["pathlib", "typing", "ast"],
+  "precommit": ["sys", "pathlib", ".suggestions"],
+  "suggestions": ["pathlib", ".rules"],
+  "rules": ["pathlib", "..metrics.encapsulation"],
+  "commands": ["json", "pathlib", "typer", "..analyzer.module_discovery", "..analyzer.import_analyzer", "..metrics.coupling", "..visualization.graph_generator"],
+  "file_utils": ["pathlib"],
+  "config": ["dataclasses", "pathlib", "yaml"],
+  "module_discovery": ["pathlib", "typing"],
+  "method_analyzer": ["pathlib", "typing", "ast"],
+  "ast_parser": ["ast", "pathlib", "typing"],
+  "import_analyzer": ["__future__", "ast", "pathlib", "typing", ".ast_parser"]
+}
