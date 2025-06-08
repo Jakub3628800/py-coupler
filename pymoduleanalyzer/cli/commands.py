@@ -74,10 +74,19 @@ def graph(
     format: str = typer.Option(
         "dot", "--format", "-f", help="graph format: dot or mermaid"
     ),
+    json_input: str | None = typer.Option(
+        None,
+        "--json-input",
+        help="Load imports mapping from JSON instead of analyzing the repository",
+    ),
 ) -> None:
     """Generate a dependency graph."""
-    modules = discover_modules(path)
-    imports = analyze_imports(modules)
+    if json_input:
+        data = json.loads(Path(json_input).read_text())
+        imports = {Path(k): v for k, v in data.items()}
+    else:
+        modules = discover_modules(path)
+        imports = analyze_imports(modules)
     if format == "mermaid" or output.endswith(".mmd"):
         data = generate_mermaid(imports)
     else:

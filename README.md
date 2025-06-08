@@ -29,3 +29,11 @@ Generate a Mermaid dependency graph:
 ```bash
 python -m pymoduleanalyzer.cli.main analyze graph --path . --output deps.mmd --format mermaid
 ```
+
+Generate a Mermaid diagram from a JSON imports file:
+
+```bash
+python -m pymoduleanalyzer.cli.main analyze graph --json-input examples/imports_example.json --output example.mmd --format mermaid
+```
+
+The generated diagram can be viewed at `examples/example.mmd`.
