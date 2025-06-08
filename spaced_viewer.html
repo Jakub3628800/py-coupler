@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PyModuleAnalyzer - Spaced Dependencies</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        #diagram {
+            width: 100%;
+            min-height: 800px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: auto;
+            background: white;
+            padding: 20px;
+        }
+        .controls {
+            margin: 15px 0;
+            text-align: center;
+        }
+        button {
+            margin: 5px;
+            padding: 10px 20px;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #1976D2;
+        }
+        .layout-controls {
+            background: #f0f7ff;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        /* Force better spacing in mermaid diagrams */
+        .mermaid svg {
+            max-width: none !important;
+            height: auto !important;
+        }
+        .mermaid .node {
+            margin: 10px !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>PyModuleAnalyzer - Well-Spaced Dependencies</h1>
+        
+        <div class="info">
+            <p><strong>Improved layout:</strong> This version uses better spacing and layout options to make the dependency relationships clearer.</p>
+        </div>
+
+        <div class="layout-controls">
+            <strong>Layout Options:</strong>
+            <button onclick="loadDiagram('TB')">Top to Bottom</button>
+            <button onclick="loadDiagram('LR')">Left to Right</button>
+            <button onclick="loadDiagram('BT')">Bottom to Top</button>
+            <button onclick="loadDiagram('RL')">Right to Left</button>
+        </div>
+        
+        <div class="controls">
+            <button onclick="zoomIn()">Zoom In</button>
+            <button onclick="zoomOut()">Zoom Out</button>
+            <button onclick="resetZoom()">Reset Zoom</button>
+            <button onclick="toggleFullscreen()">Fullscreen</button>
+        </div>
+        
+        <div id="diagram"></div>
+    </div>
+
+    <script>
+        let currentZoom = 1;
+        let currentDirection = 'TB';
+
+        function zoomIn() {
+            currentZoom += 0.2;
+            updateZoom();
+        }
+
+        function zoomOut() {
+            currentZoom = Math.max(0.3, currentZoom - 0.2);
+            updateZoom();
+        }
+
+        function resetZoom() {
+            currentZoom = 1;
+            updateZoom();
+        }
+
+        function updateZoom() {
+            const diagram = document.getElementById('diagram');
+            diagram.style.transform = `scale(${currentZoom})`;
+            diagram.style.transformOrigin = 'top left';
+        }
+
+        function toggleFullscreen() {
+            const diagram = document.getElementById('diagram');
+            if (!document.fullscreenElement) {
+                diagram.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        async function loadDiagram(direction = 'TB') {
+            currentDirection = direction;
+            
+            try {
+                const response = await fetch('clean_diagram.mmd');
+                let mermaidCode = await response.text();
+                
+                // Replace the direction in the flowchart
+                mermaidCode = mermaidCode.replace(/flowchart TD/, `flowchart ${direction}`);
+                
+                console.log('Loading with direction:', direction);
+                
+                // Configure mermaid for better spacing
+                mermaid.initialize({ 
+                    startOnLoad: false,
+                    theme: 'default',
+                    flowchart: {
+                        useMaxWidth: false,
+                        htmlLabels: true,
+                        curve: 'basis',
+                        padding: 40,
+                        nodeSpacing: 100,
+                        rankSpacing: 120,
+                        marginX: 50,
+                        marginY: 50,
+                        diagramPadding: 30
+                    },
+                    themeVariables: {
+                        primaryColor: '#e3f2fd',
+                        primaryTextColor: '#1565C0',
+                        primaryBorderColor: '#1976D2',
+                        lineColor: '#666',
+                        tertiaryColor: '#f5f5f5',
+                        background: 'white',
+                        mainBkg: '#e3f2fd',
+                        secondBkg: '#f0f7ff',
+                        tertiaryTextColor: '#333'
+                    }
+                });
+                
+                const diagramDiv = document.getElementById('diagram');
+                
+                // Clear previous diagram
+                diagramDiv.innerHTML = '';
+                
+                // Create a unique ID for this diagram
+                const diagramId = 'mermaid-' + Date.now();
+                diagramDiv.innerHTML = `<div id="${diagramId}" class="mermaid">${mermaidCode}</div>`;
+                
+                // Render the diagram
+                await mermaid.run({
+                    nodes: [document.getElementById(diagramId)]
+                });
+                
+                console.log('Diagram loaded successfully with direction:', direction);
+                
+            } catch (error) {
+                console.error('Error loading diagram:', error);
+                document.getElementById('diagram').innerHTML = 
+                    '<div style="padding: 40px; text-align: center; color: red;">' +
+                    '<h3>Error loading diagram</h3>' +
+                    '<p>' + error.message + '</p>' +
+                    '<p>Make sure clean_diagram.mmd exists in the same directory.</p>' +
+                    '<p>Check the browser console for more details.</p>' +
+                    '</div>';
+            }
+        }
+
+        // Auto-load on page load
+        window.onload = () => loadDiagram('LR'); // Start with Left-to-Right for better spacing
+    </script>
+</body>
+</html>

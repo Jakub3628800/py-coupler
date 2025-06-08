@@ -1,0 +1,195 @@
+flowchart TB
+
+    subgraph scripts[scripts]
+        node0[generate_interactive_html]
+        node1[generate_filtered_mermaid]
+        node2[main]
+        node3[generate_grouped_mermaid]
+        node4[generate_html_report]
+    end
+
+    subgraph pymoduleanalyzer[pymoduleanalyzer]
+        node5[__init__]
+    end
+
+    subgraph utils[utils]
+        node6[file_utils]
+        node7[config]
+        node8[__init__]
+    end
+
+    subgraph linter[linter]
+        node9[rules]
+        node10[precommit]
+        node11[suggestions]
+        node12[__init__]
+    end
+
+    subgraph metrics[metrics]
+        node13[complexity]
+        node14[coupling]
+        node15[encapsulation]
+        node16[__init__]
+    end
+
+    subgraph analyzer[analyzer]
+        node17[module_discovery]
+        node18[ast_parser]
+        node19[import_analyzer]
+        node20[method_analyzer]
+        node21[__init__]
+    end
+
+    subgraph cli[cli]
+        node22[commands]
+        node23[main]
+        node24[__init__]
+    end
+
+    subgraph visualization[visualization]
+        node25[graph_generator]
+        node26[report_builder]
+        node27[__init__]
+    end
+
+    subgraph stdlib[Standard Library]
+        std___future___annotations[__future__.annotations]
+        std_collections_defaultdict[collections.defaultdict]
+        std_dataclasses_dataclass[dataclasses.dataclass]
+        std_json[json]
+        std_pathlib_Path[pathlib.Path]
+        std_sys[sys]
+        std_typing_Dict[typing.Dict]
+        std_typing_Iterable[typing.Iterable]
+        std_typing_List[typing.List]
+    end
+
+    subgraph thirdparty[Third-party Packages]
+        pkg_graphviz[graphviz]
+        pkg_jinja2_Template[jinja2.Template]
+        pkg_pymoduleanalyzer_analyzer_import_analyzer_analyze_imports[pymoduleanalyzer.analyzer.import_analyzer.analyze_imports]
+        pkg_pymoduleanalyzer_analyzer_module_discovery_discover_modules[pymoduleanalyzer.analyzer.module_discovery.discover_modules]
+        pkg_pymoduleanalyzer_cli_main_app[pymoduleanalyzer.cli.main.app]
+        pkg_pymoduleanalyzer_visualization_report_builder_build_report[pymoduleanalyzer.visualization.report_builder.build_report]
+        pkg_typer[typer]
+        pkg_yaml[yaml]
+    end
+
+    %% Dependencies
+    node0 --> std_json
+    node0 --> std_pathlib_Path
+    node0 --> pkg_pymoduleanalyzer_analyzer_module_discovery_discover_modules
+    node0 --> pkg_pymoduleanalyzer_analyzer_import_analyzer_analyze_imports
+    node1 --> std_pathlib_Path
+    node1 --> pkg_pymoduleanalyzer_analyzer_module_discovery_discover_modules
+    node1 --> pkg_pymoduleanalyzer_analyzer_import_analyzer_analyze_imports
+    node2 --> pkg_pymoduleanalyzer_cli_main_app
+    node3 --> std_pathlib_Path
+    node3 --> std_collections_defaultdict
+    node3 --> pkg_pymoduleanalyzer_analyzer_module_discovery_discover_modules
+    node3 --> pkg_pymoduleanalyzer_analyzer_import_analyzer_analyze_imports
+    node4 --> std_pathlib_Path
+    node4 --> pkg_pymoduleanalyzer_analyzer_module_discovery_discover_modules
+    node4 --> pkg_pymoduleanalyzer_analyzer_import_analyzer_analyze_imports
+    node4 --> pkg_pymoduleanalyzer_visualization_report_builder_build_report
+    node6 --> std_pathlib_Path
+    node7 --> std_dataclasses_dataclass
+    node7 --> std_pathlib_Path
+    node7 --> pkg_yaml
+    node9 --> std_pathlib_Path
+    node10 --> std_sys
+    node10 --> std_pathlib_Path
+    node11 --> std_pathlib_Path
+    node13 --> std_pathlib_Path
+    node14 --> std_pathlib_Path
+    node14 --> std_typing_Dict
+    node14 --> std_typing_Iterable
+    node14 --> std_typing_List
+    node15 --> std_pathlib_Path
+    node15 --> std_typing_List
+    node15 --> node18
+    node17 --> std_pathlib_Path
+    node17 --> std_typing_List
+    node18 --> node18
+    node18 --> std_pathlib_Path
+    node18 --> std_typing_List
+    node19 --> std___future___annotations
+    node19 --> node18
+    node19 --> std_pathlib_Path
+    node19 --> std_typing_Dict
+    node19 --> std_typing_List
+    node20 --> std_pathlib_Path
+    node20 --> std_typing_Dict
+    node20 --> std_typing_List
+    node20 --> node18
+    node22 --> std_json
+    node22 --> std_pathlib_Path
+    node22 --> pkg_typer
+    node23 --> pkg_typer
+    node25 --> std_pathlib_Path
+    node25 --> std_typing_Dict
+    node25 --> std_typing_List
+    node25 --> pkg_graphviz
+    node26 --> std_pathlib_Path
+    node26 --> std_typing_Dict
+    node26 --> std_typing_List
+    node26 --> pkg_jinja2_Template
+
+    %% Styling
+    classDef stdlibStyle fill:#F5F5F5,stroke:#757575,stroke-width:2px,color:#333333
+    classDef thirdpartyStyle fill:#FFE0B2,stroke:#F57C00,stroke-width:2px,color:#333333
+    classDef analyzerStyle fill:#4CAF50,stroke:#2E7D32,stroke-width:3px,color:#ffffff
+    classDef cliStyle fill:#2196F3,stroke:#1565C0,stroke-width:3px,color:#ffffff
+    classDef linterStyle fill:#FF9800,stroke:#F57C00,stroke-width:3px,color:#ffffff
+    classDef metricsStyle fill:#9C27B0,stroke:#6A1B9A,stroke-width:3px,color:#ffffff
+    classDef pymoduleanalyzerStyle fill:#E91E63,stroke:#C2185B,stroke-width:3px,color:#ffffff
+    classDef scriptsStyle fill:#00BCD4,stroke:#0097A7,stroke-width:3px,color:#000000
+    classDef utilsStyle fill:#FFC107,stroke:#F57F17,stroke-width:3px,color:#ffffff
+    classDef visualizationStyle fill:#607D8B,stroke:#37474F,stroke-width:3px,color:#ffffff
+
+    %% Apply styles
+    class node0 scriptsStyle
+    class node1 scriptsStyle
+    class node2 scriptsStyle
+    class node3 scriptsStyle
+    class node4 scriptsStyle
+    class node5 pymoduleanalyzerStyle
+    class node6 utilsStyle
+    class node7 utilsStyle
+    class node8 utilsStyle
+    class node9 linterStyle
+    class node10 linterStyle
+    class node11 linterStyle
+    class node12 linterStyle
+    class node13 metricsStyle
+    class node14 metricsStyle
+    class node15 metricsStyle
+    class node16 metricsStyle
+    class node17 analyzerStyle
+    class node18 analyzerStyle
+    class node19 analyzerStyle
+    class node20 analyzerStyle
+    class node21 analyzerStyle
+    class node22 cliStyle
+    class node23 cliStyle
+    class node24 cliStyle
+    class node25 visualizationStyle
+    class node26 visualizationStyle
+    class node27 visualizationStyle
+    class std_pathlib_Path stdlibStyle
+    class std_json stdlibStyle
+    class std_typing_List stdlibStyle
+    class std_collections_defaultdict stdlibStyle
+    class std_dataclasses_dataclass stdlibStyle
+    class std_typing_Dict stdlibStyle
+    class std_typing_Iterable stdlibStyle
+    class std___future___annotations stdlibStyle
+    class std_sys stdlibStyle
+    class pkg_jinja2_Template thirdpartyStyle
+    class pkg_pymoduleanalyzer_analyzer_module_discovery_discover_modules thirdpartyStyle
+    class pkg_yaml thirdpartyStyle
+    class pkg_typer thirdpartyStyle
+    class pkg_pymoduleanalyzer_cli_main_app thirdpartyStyle
+    class pkg_graphviz thirdpartyStyle
+    class pkg_pymoduleanalyzer_visualization_report_builder_build_report thirdpartyStyle
+    class pkg_pymoduleanalyzer_analyzer_import_analyzer_analyze_imports thirdpartyStyle
